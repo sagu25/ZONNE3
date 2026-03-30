@@ -194,13 +194,10 @@ export default function ZoneObservatory({ zones, assets, accessLog, mode, darkMo
             )
           })}
 
-          {/* Classification tag */}
-          <text x="574" y="16" className="zone-lbl" style={{ textAnchor:'end', fontSize:'9px', fill: labelText }}>CLASSIFICATION: RESTRICTED</text>
-
-          {/* "RBAC boundary" label — middle centre */}
-          <rect x={130} y={153} width={320} height={19} rx={4}
+          {/* "RBAC boundary" label — top centre */}
+          <rect x={130} y={4} width={320} height={19} rx={4}
             fill="rgba(0,232,124,0.06)" stroke="rgba(0,232,124,0.25)" strokeWidth={1} />
-          <text x={290} y={166}
+          <text x={290} y={17}
             style={{ fontFamily:'var(--font-mono)', fontSize:'9.5px', fill:'#00e87c', fontWeight:700, textAnchor:'middle', letterSpacing:'0.08em' }}>
             ACTIVE TASK: Zone 3 · CLEARED: ALL ZONES
           </text>
