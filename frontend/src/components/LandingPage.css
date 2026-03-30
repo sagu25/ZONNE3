@@ -120,6 +120,15 @@
   color: #00d4ff;
   text-shadow: 0 0 60px #00d4ff66, 0 0 120px #00d4ff22;
 }
+.lp-logo-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  color: #4a7a96;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 8px;
+}
 
 /* ── Divider line ──────────────────────────────────────────────────────────── */
 .lp-divider {

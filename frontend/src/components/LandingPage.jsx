@@ -299,6 +299,7 @@ export default function LandingPage({ onEnter }) {
 
         {ready && <div className="lp-logo lp-reveal" style={d(0.4)}>
           <span className="lp-logo-accent">TARE</span>
+          <div className="lp-logo-sub">Trusted Access Response Engine · E&amp;U Security Platform</div>
         </div>}
 
         {ready && <div className="lp-tagline lp-reveal" style={d(0.8)}>
