@@ -198,7 +198,7 @@ export default function ZoneObservatory({ zones, assets, accessLog, mode, darkMo
           <text x="574" y="16" className="zone-lbl" style={{ textAnchor:'end', fontSize:'9px', fill: labelText }}>CLASSIFICATION: RESTRICTED</text>
 
           {/* "RBAC boundary" label — bottom centre */}
-          <rect x={166} y={272} width={248} height={19} rx={4}
+          <rect x={130} y={272} width={320} height={19} rx={4}
             fill="rgba(0,232,124,0.06)" stroke="rgba(0,232,124,0.25)" strokeWidth={1} />
           <text x={290} y={285}
             style={{ fontFamily:'var(--font-mono)', fontSize:'9.5px', fill:'#00e87c', fontWeight:700, textAnchor:'middle', letterSpacing:'0.08em' }}>
