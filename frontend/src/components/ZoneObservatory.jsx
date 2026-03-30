@@ -194,6 +194,9 @@ export default function ZoneObservatory({ zones, assets, accessLog, mode, darkMo
             )
           })}
 
+          {/* Classification tag */}
+          <text x="574" y="16" className="zone-lbl" style={{ textAnchor:'end', fontSize:'9px', fill: labelText }}>CLASSIFICATION: RESTRICTED</text>
+
           {/* "RBAC boundary" label — centred */}
           <rect x={166} y={4} width={248} height={19} rx={4}
             fill="rgba(0,232,124,0.06)" stroke="rgba(0,232,124,0.25)" strokeWidth={1} />
