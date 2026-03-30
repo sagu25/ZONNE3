@@ -146,6 +146,68 @@ async def reset():
     engine.reset()
     return {"status": "reset"}
 
+# ─── TARE Assistant chat query ────────────────────────────────────────────────
+@app.post("/chat/query")
+async def chat_query(body: dict):
+    q = (body.get("question") or "").lower().strip()
+    snap = engine._snapshot()
+    stats       = snap.get("stats", {})
+    gateway_log = snap.get("gateway_log", [])
+    incidents   = [snap["active_incident"]] if snap.get("active_incident") else []
+
+    # Count by scenario/signal type from gateway log
+    rogue_count       = sum(1 for e in gateway_log if any(s.get("signal") in ("BURST_RATE","OUT_OF_ZONE") for s in e.get("signals", [])))
+    scope_creep_count = sum(1 for e in gateway_log if any(s.get("signal") == "HEALTHY_ZONE_ACCESS" for s in e.get("signals", [])))
+    identity_count    = sum(1 for e in gateway_log if any(s.get("signal") == "IDENTITY_MISMATCH" for s in e.get("signals", [])))
+    ml_count          = sum(1 for e in gateway_log if any(s.get("signal") == "ML_ANOMALY" for s in e.get("signals", [])))
+    denied            = stats.get("denied", 0)
+    allowed           = stats.get("allowed", 0)
+    total             = stats.get("total", 0)
+    freeze_events     = stats.get("freeze_events", 0)
+
+    def answer(text): return JSONResponse({"answer": text})
+
+    if any(w in q for w in ["rogue", "gone rogue", "burst"]):
+        return answer(f"In this session, {rogue_count} command(s) triggered rogue/burst-rate signals (BURST_RATE or OUT_OF_ZONE). {denied} total commands were blocked by TARE.")
+
+    if any(w in q for w in ["scope creep", "escalation", "healthy zone"]):
+        return answer(f"{scope_creep_count} command(s) triggered SCOPE CREEP signals (agent accessing healthy zones outside its clearance). This indicates an agent that started legitimate but expanded its reach.")
+
+    if any(w in q for w in ["identity", "impersonator", "forged", "ghost", "clone"]):
+        return answer(f"{identity_count} command(s) were blocked due to IDENTITY_MISMATCH — forged or mismatched agent credentials. These were stopped before any command executed.")
+
+    if any(w in q for w in ["ml", "machine learning", "anomaly", "silent", "recon", "slow"]):
+        return answer(f"The ML anomaly detector flagged {ml_count} command(s) this session. ML catches slow & low attacks that rule-based signals miss — subtle patterns over time.")
+
+    if any(w in q for w in ["freeze", "frozen", "lockout"]):
+        return answer(f"TARE triggered {freeze_events} FREEZE event(s) this session. A FREEZE locks out the agent and blocks all further commands until a supervisor resets the system.")
+
+    if any(w in q for w in ["incident", "servicenow", "ticket"]):
+        if incidents:
+            inc = incidents[0]
+            return answer(f"Active incident: {inc.get('incident_id')} — Priority {inc.get('priority', 'N/A')}, State: {inc.get('state','Open')}. Raised at {inc.get('created_at','unknown')}. Assigned to SOC Analyst.")
+        return answer("No active ServiceNow incident in this session. Incidents are raised automatically when TARE detects a confirmed threat.")
+
+    if any(w in q for w in ["total", "how many", "commands", "summary", "stats", "statistics", "report", "issues", "misbehav"]):
+        return answer(
+            f"Session summary — Total commands: {total} | Allowed: {allowed} | Blocked: {denied} | Freeze events: {freeze_events}. "
+            f"Rogue/burst signals: {rogue_count} | Scope creep: {scope_creep_count} | Identity mismatches: {identity_count} | ML anomalies: {ml_count}."
+        )
+
+    if any(w in q for w in ["zone", "which zone", "zone 1", "zone 2", "zone 3"]):
+        zone_hits = {}
+        for e in gateway_log:
+            z = e.get("asset_id", "")[:2] if e.get("asset_id") else e.get("zone", "")
+            if z: zone_hits[z] = zone_hits.get(z, 0) + 1
+        zone_str = ", ".join(f"{k}: {v} cmd(s)" for k, v in sorted(zone_hits.items())) or "No zone data yet"
+        return answer(f"Command distribution by zone this session — {zone_str}.")
+
+    return answer(
+        "I can answer questions about this session's activity. Try asking: "
+        "'How many agents went rogue?', 'Any scope creep?', 'Identity mismatches?', "
+        "'ML anomalies?', 'Show session summary', 'Any freeze events?', or 'Active incidents?'"
+    )
+
 # ─── Audit log download ────────────────────────────────────────────────────────
 @app.get("/logs/download")
 async def download_logs():
