@@ -55,6 +55,8 @@ html, body {
   height: 100vh;
   overflow: hidden;
   background: var(--bg-base);
+  /* Scale entire UI proportionally to viewport — reference width 1440px */
+  zoom: clamp(0.55, calc(100vw / 1440), 1.4);
 }
 
 .app-layout {
@@ -70,7 +72,7 @@ html, body {
 .main-grid {
   flex: 1;
   display: grid;
-  grid-template-columns: 295px 1fr 300px;
+  grid-template-columns: 20.5vw 1fr 20.8vw;
   grid-template-rows: 62% 38%;
   grid-template-areas:
     "left zone    monitor"
