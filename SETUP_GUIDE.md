@@ -1,4 +1,4 @@
- # TARE — Setup & Run Guide
+# TARE — Setup & Run Guide
 ### Trusted Access Response Engine · Energy & Utilities Security Platform
 *POC Demo — Internal Use Only*
 
@@ -6,55 +6,48 @@
 
 ## What This Is
 
-TARE is a post-grant identity security platform for AI agents operating on
-critical infrastructure. It detects and responds to behavioural anomalies
-in real time — even when the agent's credentials are completely valid.
+TARE is a post-grant identity security platform for autonomous AI agents
+operating on critical infrastructure. It detects and responds to behavioural
+anomalies in real time — even when the agent's credentials are completely valid.
 
-**Three attack scenarios demonstrated:**
-- **Scenario 1** — Normal Agent (legitimate, TARE watches silently)
-- **Scenario 2** — Rogue Agent (valid credentials, malicious behaviour)
+**Six attack scenarios demonstrated:**
 
-
-- **Scenario 3** — Impersonator (forged token, blocked at authentication layer)
+| # | Flash Name | Type |
+|---|---|---|
+| 1 | 🟢 GRID DOCTOR | Legitimate fault-repair agent — baseline |
+| 2 | 🔴 GONE ROGUE | Valid credentials, malicious behaviour, burst attack |
+| 3 | 👻 GHOST CLONE | Forged identity token — blocked at the door |
+| 4 | 🔺 SCOPE CREEP | Starts legitimate, pivots to unauthorised zones mid-session |
+| 5 | 🕳 SILENT RECON | Slow & low reconnaissance — only ML catches it |
+| 6 | 💥 SWARM STRIKE | Two agents attacking simultaneously |
 
 ---
 
 ## Requirements
 
-Open **Command Prompt** and check these before starting:
-
 ```
-python --version
+python --version    ✅ Need Python 3.10+
 ```
-✅ Need **Python 3.10 or higher**
 
-Node.js is only needed if you want to edit and rebuild the frontend.
-For running the demo — Node.js is **not required**.
+Node.js only needed if editing and rebuilding the frontend. Not required to run the demo.
 
 ---
 
 ## Step 1 — Get Your Groq API Key
 
-The AI Agent buttons (🤖 and 🕵) require a free Groq API key.
-Without it, only the scripted buttons (▶ Normal, ⚡ Anomaly) will work.
+All six scenario buttons require a free Groq API key.
 
 1. Go to **console.groq.com**
-2. Sign up (free)
-3. Create an API key
-4. Copy it — you will need it in Step 3
+2. Sign up (free) → Create an API key → Copy it
 
 ---
 
-## Step 2 — Install Backend Dependencies
-
-Open **Command Prompt** and run:
+## Step 2 — Install Backend Dependencies (First Time Only)
 
 ```
 cd C:\Users\YourName\Desktop\Aegis\aegis-poc\backend
 pip install -r requirements.txt
 ```
-
-Wait for it to finish. First time only — no need to repeat.
 
 If pip fails due to firewall:
 ```
@@ -65,181 +58,167 @@ pip install -r requirements.txt --trusted-host pypi.org --trusted-host files.pyt
 
 ## Step 3 — Set the Groq API Key
 
-In the `backend` folder, create a file called `.env`
-
-Open Notepad, type this exactly:
+Create `backend/.env` containing:
 ```
 GROQ_API_KEY=your_actual_key_here
 ```
 
-Replace `your_actual_key_here` with the key you copied from console.groq.com
+---
 
-Save the file as `.env` inside:
+## Step 4 — Train the ML Model (First Time Only)
+
 ```
-C:\Users\YourName\Desktop\Aegis\aegis-poc\backend\.env
+cd C:\Users\YourName\Desktop\Aegis\aegis-poc\ml
+python generate_grid_data.py
+python train_model.py
 ```
+
+Creates `ml/model.pkl`. Only needed once.
 
 ---
 
-## Step 4 — Start the Server
-
-In **Command Prompt**, from the backend folder:
+## Step 5 — Start the Server
 
 ```
 cd C:\Users\YourName\Desktop\Aegis\aegis-poc\backend
-python -m uvicorn main:app --port 8000 --host 0.0.0.0
+python -m uvicorn main:app --port 8002 --host 0.0.0.0
 ```
 
-You should see:
+Expected output:
 ```
-INFO: Uvicorn running on http://0.0.0.0:8000
+INFO: Uvicorn running on http://0.0.0.0:8002
 INFO: Application startup complete.
 ```
 
-Leave this window open. Do not close it during the demo.
+Leave this window open throughout the demo.
 
 ---
 
-## Step 5 — Open the App
-
-Open your browser (Chrome recommended) and go to:
+## Step 6 — Open the App
 
 ```
-http://localhost:8000
+http://localhost:8002
 ```
 
-You should see the TARE dashboard.
-
-Top right corner must show **● LIVE** in green before you start.
+The **animated landing page** loads first.
 
 ---
 
-## Step 6 — Run the Demo
+## Step 7 — Landing Page
 
-### Header buttons explained
+The landing page displays:
+- **Maturity Journey** — Manual → Automated → Autonomous (enlarged cards, projection-ready)
+- **What TARE Monitors** — 6 parameters in plain English
+- **▶ Play Narration** — starts automated voice walkthrough (browser Text-to-Speech, no install needed)
+- **Launch Demo →** — fades into the main dashboard
 
-| Button | What it does |
+**Narrated presentation flow:**
+1. Click **▶ Play Narration** — voice starts automatically
+2. Click **Launch Demo →** when ready — narration continues seamlessly on dashboard
+3. Use the **NarrationBar** (floating bottom strip) to pause/mute/resume at any time
+
+**Manual presentation:**
+1. Walk through landing page yourself
+2. Click **Launch Demo →** to enter dashboard
+
+---
+
+## Step 8 — Run the Scenarios
+
+All six scenarios are in the **▶ Scenarios** dropdown on the right panel.
+
+| Scenario | Action after clicking |
 |---|---|
-| **▶ Normal** | Scripted — 3 authorised commands in Z3, all ALLOW. Guaranteed to work. |
-| **⚡ Anomaly** | Scripted — triggers burst + wrong zone + skip sim. TARE fires. |
-| **🤖 Agent: Fix Fault** | Real AI agent — reasons autonomously to fix Z3 fault. Requires Groq key. |
-| **🤖 Agent: Rogue Task** | Real AI agent — autonomously attacks healthy zones. Requires Groq key. |
-| **🕵 Agent: Impersonator** | Real AI agent — forged token, blocked at auth layer. Requires Groq key. |
-| **↺ Reset** | Resets everything — zones, assets, mode, logs, chat. Always reset between scenarios. |
+| 🟢 GRID DOCTOR | Watch Zone 3 heal. All ALLOW. Click Reset. |
+| 🔴 GONE ROGUE | Watch TARE fire. Click **Deny** in TARE Assistant. Click Reset. |
+| 👻 GHOST CLONE | Watch all commands denied instantly at auth. Click Reset. |
+| 🔺 SCOPE CREEP | Watch pivot mid-session. Click **Approve** to show blast-radius containment. Click Reset. |
+| 🕳 SILENT RECON | Rules stay silent, ML fires. Click **Deny**. Click Reset. |
+| 💥 SWARM STRIKE | Both agents blocked simultaneously. Click **Deny**. |
 
----
-
-### Recommended demo order
-
-**For a full presentation (15 minutes):**
-
-```
-1. ↺ Reset (always start clean)
-2. 🤖 Agent: Fix Fault       → Normal baseline. Z3 heals. Mode stays NORMAL.
-3. ↺ Reset
-4. 🤖 Agent: Rogue Task      → TARE fires. Zones turn red. Click ✕ Deny.
-5. ↺ Reset
-6. 🕵 Agent: Impersonator    → All DENY at auth layer. Nothing changes on grid.
-```
-
-**For a quick demo (5 minutes, no Groq key needed):**
-
-```
-1. ↺ Reset
-2. ▶ Normal                  → Baseline. All ALLOW.
-3. ↺ Reset
-4. ⚡ Anomaly                → TARE fires. Click ✓ Approve. Watch timer.
-```
-
----
-
-### Supervisor decision buttons
-
-When TARE fires and the Chat Assistant shows the LLM explanation,
-two buttons appear at the bottom of the chat panel:
-
-| Button | When to click | What happens |
-|---|---|---|
-| **✓ Approve 3-min Time-Box** | Scripted anomaly — borderline case | 3-minute supervised window opens. Timer counts down in header. System drops to SAFE automatically when expired. |
-| **✕ Deny / Escalate** | Rogue agent — clearly malicious | Agent locked out. ServiceNow incident escalated to Critical. Mode goes to SAFE. |
+**Always click ↺ Reset between scenarios.**
 
 ---
 
 ## What You Will See
 
-### Header Bar
-- **Mode badge** — NORMAL / FREEZE / DOWNGRADE / TIME-BOX / SAFE
-- **Stats** — CMDS total, ALLOW count, DENY count, FREEZE events
-- **Timer** — countdown bar appears when TIME-BOX is active
-- **● LIVE** — green dot confirms WebSocket connection
+### NarrationBar (floating bottom strip)
+Persists across the full demo. Shows current narration line + progress bar.
+- **▶ / ⏸** — play / pause
+- **■** — stop
+- **🔊 / 🔇** — mute toggle
+- **▼** — collapse out of the way
 
-### Left Column
-- **Operator Agent** — agent identity, role, clearance, RBAC zones, last command
-- **TARE Response Engine** — mode ladder showing current state, anomaly score, signals
-- **ServiceNow Incident** — auto-created when TARE fires, shows evidence and status
+### Narrative Banner (top scrolling ticker)
+Plain-English description of what is happening.
+Shows TARE lifecycle: NORMAL → FREEZE → DOWNGRADE → TIME-BOX → SAFE
 
-### Centre Column
-- **Zone Observatory** — live OT/SCADA grid map. Zones pulse red when attacked.
-- **Command Gateway** — every command logged with timestamp, asset, zone, decision, policy, mode
+### Zone Observatory (centre)
+Live SVG grid map. Click any zone to open the **Zone Info Modal**:
+- **Left:** live Leaflet GIS map (real London geography, power line overlays)
+- **Centre:** zone type, fault alert, description
+- **Right:** asset cards (BRK + FDR) with live state badges
 
-### Right Column
-- **TARE Assistant** — LLM-generated plain-English explanation for supervisor
-- **Activity Feed** — real-time event log. Red = threat, orange = warning, cyan = normal
+### Left Panel
+- **Operator Agent** — identity, role, clearance, RBAC zones, last command
+- **TARE Response Engine** — mode ladder, anomaly score, deviation signals
+- **ServiceNow Incident** — auto-created on TARE fire with P1/P2/P3 priority badge
 
----
+### Right Panel
+- **Live Event Monitor** — 6 source chips, stats, latest event
+- **▶ Scenarios** dropdown — all six scenarios
+- **↺ Reset** — resets everything to clean state
 
-## Port Conflict (Windows Issue)
-
-Windows sometimes holds sockets open invisibly after a server stops.
-If you see this error:
-
-```
-ERROR: [Errno 10048] error while attempting to bind on address...
-```
-
-Just use the next port number:
-
-```
-python -m uvicorn main:app --port 8001 --host 0.0.0.0
-```
-
-Then open `http://localhost:8001` in the browser instead.
-
-Increment the port (8000 → 8001 → 8002 → 8003) until it starts cleanly.
-The WebSocket URL updates automatically — no other change needed.
+### Bottom Tabs
+- **🛡 Command Gateway** — every command with ALLOW/DENY, policy, zone, asset
+- **💬 TARE Assistant** — LLM-written supervisor briefing + Approve/Deny buttons
+- **📋 Activity** — real-time feed with local timestamps
 
 ---
 
-## Rebuilding the Frontend (Only If You Edit Source Code)
+## ServiceNow Priority Classification
 
-The React app is pre-built and served from `backend/static/`.
-You only need to rebuild if you change files in `frontend/src/`.
+| Priority | Badge | Triggered by |
+|---|---|---|
+| 🔴 P1 — Critical | Red | IDENTITY_MISMATCH, BURST_RATE, HEALTHY_ZONE_ACCESS |
+| 🟠 P2 — High | Orange | OUT_OF_ZONE, ML_ANOMALY |
+| 🟡 P3 — Medium | Yellow | Authorised zone only |
 
-Requirements: Node.js 16 or higher.
+Scenario mapping:
+- **P1:** GONE ROGUE, GHOST CLONE, SWARM STRIKE
+- **P2:** SCOPE CREEP, SILENT RECON
+- **P3:** GRID DOCTOR (no incident raised)
+
+---
+
+## Supervisor Decision Buttons
+
+Appear in the TARE Assistant tab when TARE fires:
+
+| Button | When to use | What happens |
+|---|---|---|
+| **✓ Approve 3-min Time-Box** | SCOPE CREEP — borderline case | 3-min supervised window. Dangerous ops still blocked. Auto-closes. |
+| **✕ Deny / Escalate** | GONE ROGUE, SWARM STRIKE, SILENT RECON | Agent locked out. Incident escalated to Critical. SAFE mode. |
+
+---
+
+## Port Conflict (Windows)
+
+If you see `ERROR: [Errno 10048]`:
+```
+python -m uvicorn main:app --port 8003 --host 0.0.0.0
+```
+Increment (8002 → 8003 → 8004) until it starts. WebSocket URL updates automatically.
+
+---
+
+## Rebuilding the Frontend (Only If You Edit Source)
 
 ```
 cd C:\Users\YourName\Desktop\Aegis\aegis-poc\frontend
-npm install          (first time only)
+npm install        (first time only)
 npm run build
-```
-
-Then copy the build to the backend:
-```
-xcopy /E /Y dist\* ..\backend\static\
-```
-
-Or in bash:
-```
 cp -r dist/. ../backend/static/
-```
-
----
-
-## Stopping the Server
-
-In the Command Prompt window running uvicorn, press:
-```
-Ctrl + C
 ```
 
 ---
@@ -248,47 +227,53 @@ Ctrl + C
 
 | Problem | Fix |
 |---|---|
-| **● OFFLINE in top right** | Backend not running. Run uvicorn command again. |
-| **Blank page in browser** | Wrong URL. Make sure you are on `http://localhost:PORT` not 5173. |
-| **Port already in use** | Increment port number. See Port Conflict section above. |
-| **AI Agent buttons do nothing** | Groq API key not set. Check `backend/.env` exists and key is correct. |
-| **Agent halted: 401** | Groq key invalid or expired. Get a new one from console.groq.com. |
-| **Agent halted: 429** | Groq rate limit hit. Wait 30 seconds and try again. |
-| **TARE fires on Normal Agent** | Agent ran too many commands. Click Reset and try again. |
-| **pip install fails** | Use hotspot. Add `--trusted-host pypi.org` flag. |
+| **● OFFLINE in header** | Backend not running. Start uvicorn again. |
+| **Blank page** | Must be `http://localhost:8002` not port 5173. |
+| **Port already in use** | Increment port number. |
+| **Scenarios do nothing** | Groq key missing. Check `backend/.env`. |
+| **Agent halted: 401** | Groq key invalid. Get a new one at console.groq.com. |
+| **Agent halted: 429** | Groq rate limit. Wait 30 seconds. |
+| **No voice narration** | Browser needs a user gesture first — click anywhere on page, then Play Narration. |
+| **pip install fails** | Add `--trusted-host pypi.org` flag. |
 
 ---
 
-## Quick Reference Card
+## Quick Reference
 
 ```
 FIRST TIME SETUP
 ────────────────
-cd aegis-poc\backend
+cd aegis-poc\ml
+python generate_grid_data.py && python train_model.py
+
+cd ..\backend
 pip install -r requirements.txt
-Create .env file with GROQ_API_KEY=your_key
+Create .env → GROQ_API_KEY=your_key
 
 EVERY TIME YOU DEMO
 ────────────────────
 cd aegis-poc\backend
-python -m uvicorn main:app --port 8000 --host 0.0.0.0
-Open browser: http://localhost:8000
-Confirm: ● LIVE showing green
+python -m uvicorn main:app --port 8002 --host 0.0.0.0
+Open: http://localhost:8002
+Landing page → Play Narration (optional) → Launch Demo →
+Confirm ● LIVE in header
 
 DEMO ORDER
 ──────────
-↺ Reset → 🤖 Agent: Fix Fault   (normal)
-↺ Reset → 🤖 Agent: Rogue Task  (attack) → ✕ Deny
-↺ Reset → 🕵 Agent: Impersonator (impersonate)
+↺ Reset → 🟢 GRID DOCTOR             (baseline)
+↺ Reset → 🔴 GONE ROGUE   → Deny     (burst attack)
+↺ Reset → 👻 GHOST CLONE             (identity fraud)
+↺ Reset → 🔺 SCOPE CREEP  → Approve  (pivot + containment)
+↺ Reset → 🕳 SILENT RECON → Deny     (ML only)
+↺ Reset → 💥 SWARM STRIKE → Deny     (coordinated)
 
 PORT CONFLICT?
 ──────────────
-Use next port: --port 8001, 8002, 8003...
-URL changes to match: http://localhost:8001
+--port 8003, 8004... → http://localhost:8003
 ```
 
 ---
 
 *TARE AEGIS-ID — Setup & Run Guide*
 *Energy & Utilities Security Platform — Internal Use Only*
-*Version: POC 2.0 — March 2026*
+*Version: POC v3.4 — March 2026*

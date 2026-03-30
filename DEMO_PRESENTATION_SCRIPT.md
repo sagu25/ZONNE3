@@ -9,8 +9,8 @@
 **Setup checklist:**
 - [ ] venv active: `c:\Users\Admin\Desktop\Aegis\venv\Scripts\activate`
 - [ ] Server running: `cd backend && python -m uvicorn main:app --port 8000 --host 0.0.0.0`
-- [ ] Browser open at `http://localhost:8000`
-- [ ] Landing page appears — click **Enter TARE** to proceed to main app
+- [ ] Browser open at `http://localhost:8002`
+- [ ] Landing page appears — click **Launch Demo →** to proceed to main app
 - [ ] Mode shows `NORMAL` in header
 - [ ] All 3 zones show in Zone Observatory
 - [ ] WebSocket dot shows `LIVE` (green)
@@ -20,12 +20,12 @@
 **Demo order:**
 1. Landing page walkthrough (click Play Narration or present manually)
 2. Enter main app — architecture walkthrough
-3. Scenario 1 — ✦ FAULT REPAIR (legitimate)
-4. Scenario 2 — ☠ ROGUE AGENT → Deny
-5. Scenario 3 — 👤 GHOST CLONE
-6. Scenario 4 — ⚡ PRIVILEGE HACK → Approve (show blast radius contained)
-7. Scenario 5 — 👁 PHANTOM RECON → Deny (ML key differentiator)
-8. Scenario 6 — 🎯 DUAL STRIKE → Deny
+3. Scenario 1 — 🟢 GRID DOCTOR (legitimate)
+4. Scenario 2 — 🔴 GONE ROGUE → Deny
+5. Scenario 3 — 👻 GHOST CLONE
+6. Scenario 4 — 🔺 SCOPE CREEP → Approve (show blast radius contained)
+7. Scenario 5 — 🕳 SILENT RECON → Deny (ML key differentiator)
+8. Scenario 6 — 💥 SWARM STRIKE → Deny
 9. What's real vs mocked
 10. Phase 2 roadmap
 11. Close + Q&A
@@ -91,8 +91,8 @@
 
 ---
 
-## SCENARIO 1 — ✦ FAULT REPAIR (LEGITIMATE AGENT)
-*(Click: ✦ FAULT REPAIR)*
+## SCENARIO 1 — 🟢 GRID DOCTOR (LEGITIMATE AGENT)
+*(Click: 🟢 GRID DOCTOR)*
 
 > "I'll start by showing the system working correctly. The agent's task:
 > Zone 3 West Grid has a voltage fault — investigate and restore it safely.
@@ -116,8 +116,8 @@
 
 ---
 
-## SCENARIO 2 — ☠ ROGUE AGENT
-*(Click: ☠ ROGUE AGENT)*
+## SCENARIO 2 — 🔴 GONE ROGUE
+*(Click: 🔴 GONE ROGUE)*
 
 > "Same system. Same credentials. Different goal.
 > This agent has been given a malicious objective: cause maximum disruption.
@@ -156,8 +156,8 @@
 
 ---
 
-## SCENARIO 3 — 👤 GHOST CLONE
-*(Click: 👤 GHOST CLONE)*
+## SCENARIO 3 — 👻 GHOST CLONE
+*(Click: 👻 GHOST CLONE)*
 
 > "Different attack type entirely.
 > This agent is trying to impersonate GridOperator-Agent.
@@ -181,8 +181,8 @@
 
 ---
 
-## SCENARIO 4 — ⚡ PRIVILEGE HACK
-*(Click: ⚡ PRIVILEGE HACK)*
+## SCENARIO 4 — 🔺 SCOPE CREEP
+*(Click: 🔺 SCOPE CREEP)*
 
 > "This is the hardest to catch — and the most common in real insider threat cases.
 > The agent starts completely legitimately.
@@ -216,8 +216,8 @@
 
 ---
 
-## SCENARIO 5 — 👁 PHANTOM RECON
-*(Click: 👁 PHANTOM RECON)*
+## SCENARIO 5 — 🕳 SILENT RECON
+*(Click: 🕳 SILENT RECON)*
 
 > "This is the most sophisticated attack — and the one that proves why
 > machine learning is not optional. Watch the gateway carefully."
@@ -253,8 +253,8 @@
 
 ---
 
-## SCENARIO 6 — 🎯 DUAL STRIKE
-*(Click: 🎯 DUAL STRIKE)*
+## SCENARIO 6 — 💥 SWARM STRIKE
+*(Click: 💥 SWARM STRIKE)*
 
 > "Final scenario — the most serious threat category.
 > Two separate agents, acting simultaneously.
@@ -357,7 +357,7 @@
 | Question | Answer |
 |---|---|
 | **"Is the AI agent actually making its own decisions?"** | "Yes. Every command sequence the agent chose — across all six scenarios — was its own reasoning. Nobody scripted those paths. The LLM decided what to do based on its goal." |
-| **"What if TARE fires incorrectly — false positive?"** | "That is exactly what the supervisor decision is for. TARE never acts unilaterally on ambiguous cases. It freezes, explains, and waits for a human. The Approve path exists for borderline cases — as we showed in PRIVILEGE HACK." |
+| **"What if TARE fires incorrectly — false positive?"** | "That is exactly what the supervisor decision is for. TARE never acts unilaterally on ambiguous cases. It freezes, explains, and waits for a human. The Approve path exists for borderline cases — as we showed in SCOPE CREEP." |
 | **"How does this scale to hundreds of agents?"** | "The gateway and detection engine are stateless per command — they scale horizontally. Phase 2 adds Azure Redis for distributed session state across any number of agents." |
 | **"Why Groq instead of OpenAI?"** | "Same capability, lower latency for the demo. Production would use Azure OpenAI for compliance and data residency." |
 | **"Can the agent learn to evade TARE?"** | "Not in the current model — the agent does not know TARE exists and gets no feedback on why commands are denied. The ML model retrains continuously in Phase 2 to stay ahead of new patterns." |
@@ -371,31 +371,31 @@
 ## DEMO FLOW SUMMARY (Quick Reference Card)
 
 ```
-Open http://localhost:8000 — Landing page → click Enter TARE — confirm NORMAL + LIVE
+Open http://localhost:8002 — Landing page → click Launch Demo — confirm NORMAL + LIVE
 Optional: click Play Narration on landing page for guided voice walkthrough
 
-1. ✦ FAULT REPAIR    → Z3 heals, mode stays NORMAL         (no action needed)
+1. 🟢 GRID DOCTOR    → Z3 heals, mode stays NORMAL         (no action needed)
    ↺ Reset
 
-2. ☠ ROGUE AGENT     → TARE fires [P1] → ✕ Deny            (attack — deny)
+2. 🔴 GONE ROGUE     → TARE fires [P1] → ✕ Deny            (attack — deny)
    ↺ Reset
 
-3. 👤 GHOST CLONE    → All blocked at auth layer [P1]       (no action needed)
+3. 👻 GHOST CLONE    → All blocked at auth layer [P1]       (no action needed)
    ↺ Reset
 
-4. ⚡ PRIVILEGE HACK  → Starts ALLOW → TARE fires [P2] → ✓ Approve  (show blast radius held)
+4. 🔺 SCOPE CREEP  → Starts ALLOW → TARE fires [P2] → ✓ Approve  (show blast radius held)
    ↺ Reset
 
-5. 👁 PHANTOM RECON  → Rules silent → ML fires [P2] → ✕ Deny   (KEY: rules miss it)
+5. 🕳 SILENT RECON  → Rules silent → ML fires [P2] → ✕ Deny   (KEY: rules miss it)
    ↺ Reset
 
-6. 🎯 DUAL STRIKE    → Two zones hit simultaneously [P1] → ✕ Deny
+6. 💥 SWARM STRIKE    → Two zones hit simultaneously [P1] → ✕ Deny
 ```
 
 **Incident priorities:**
-- P1 Critical — ROGUE AGENT, GHOST CLONE, DUAL STRIKE (identity breach / healthy zone attack / burst rate)
-- P2 High — PRIVILEGE HACK, PHANTOM RECON (out-of-zone pivot / ML-only quiet recon)
-- No incident — FAULT REPAIR (all ALLOW, legitimate)
+- P1 Critical — GONE ROGUE, GHOST CLONE, SWARM STRIKE (identity breach / healthy zone attack / burst rate)
+- P2 High — SCOPE CREEP, SILENT RECON (out-of-zone pivot / ML-only quiet recon)
+- No incident — GRID DOCTOR (all ALLOW, legitimate)
 
 ---
 
