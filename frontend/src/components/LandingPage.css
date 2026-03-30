@@ -143,10 +143,10 @@
 /* ── Sub-tagline ───────────────────────────────────────────────────────────── */
 .lp-sub {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  color: #2a5570;
-  line-height: 1.8;
-  max-width: 560px;
+  font-size: 15px;
+  color: #4a7a96;
+  line-height: 1.9;
+  max-width: 660px;
   margin-bottom: 64px;
 }
 .lp-sub em     { color: #f59e0b; font-style: normal; }
