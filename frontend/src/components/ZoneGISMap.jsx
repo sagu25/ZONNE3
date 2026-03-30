@@ -14,10 +14,10 @@ const ZONE_CONFIG = {
       { pos:[51.512, -0.118], id:'FDR-110' },
     ],
     infrastructure: [
-      { pos:[51.521,-0.128], icon:'✚', label:'Royal Hospital',     color:'#ff4d6d' },
-      { pos:[51.516,-0.112], icon:'▣', label:'National Data Ctr',  color:'#00d4ff' },
-      { pos:[51.509,-0.138], icon:'⚡', label:'Emergency Dispatch', color:'#ff9a3c' },
-      { pos:[51.507,-0.115], icon:'🏛', label:'Gov. Command Ctr',  color:'#a855f7' },
+      { pos:[51.512,-0.106], icon:'✚', label:'Royal Hospital',     color:'#ff4d6d' },
+      { pos:[51.506,-0.109], icon:'▣', label:'National Data Ctr',  color:'#00d4ff' },
+      { pos:[51.506,-0.118], icon:'⚡', label:'Emergency Dispatch', color:'#ff9a3c' },
+      { pos:[51.506,-0.128], icon:'🏛', label:'Gov. Command Ctr',  color:'#a855f7' },
     ],
   },
   Z2: {
@@ -31,10 +31,10 @@ const ZONE_CONFIG = {
       { pos:[51.499,-0.071], id:'FDR-205' },
     ],
     infrastructure: [
-      { pos:[51.507,-0.075], icon:'🏢', label:'Office Tower',      color:'#ff9a3c' },
-      { pos:[51.502,-0.062], icon:'🏠', label:'Residential Area',  color:'#00e87c' },
-      { pos:[51.492,-0.079], icon:'🛍', label:'Shopping Centre',   color:'#a855f7' },
-      { pos:[51.496,-0.065], icon:'🏠', label:'Residential Block', color:'#00e87c' },
+      { pos:[51.499,-0.057], icon:'🏢', label:'Office Tower',      color:'#ff9a3c' },
+      { pos:[51.491,-0.060], icon:'🏠', label:'Residential Area',  color:'#00e87c' },
+      { pos:[51.491,-0.071], icon:'🛍', label:'Shopping Centre',   color:'#a855f7' },
+      { pos:[51.491,-0.082], icon:'🏠', label:'Residential Block', color:'#00e87c' },
     ],
   },
   Z3: {
