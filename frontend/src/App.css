@@ -1377,15 +1377,15 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 5px 4px;
+  padding: 4px 2px;
   border-radius: 6px;
   border: 1px solid var(--border-dim);
   background: var(--bg-card);
   font-family: var(--font-mono);
   gap: 1px;
 }
-.ls-stat-chip b { font-size: 1.1rem; font-weight: 800; line-height: 1; }
-.ls-stat-chip span { font-size: 0.55rem; opacity: 0.7; letter-spacing: 0.05em; }
+.ls-stat-chip b { font-size: 1.0rem; font-weight: 800; line-height: 1; }
+.ls-stat-chip span { font-size: 0.5rem; opacity: 0.7; letter-spacing: 0.05em; }
 .ls-sc-total { border-color: rgba(100,160,255,0.3); color: #7ab4ff; }
 .ls-sc-allow { border-color: rgba(0,232,124,0.3);   color: var(--accent-green); }
 .ls-sc-deny  { border-color: rgba(255,80,80,0.3);   color: var(--accent-red); }
@@ -1893,10 +1893,10 @@ html, body {
   overflow: hidden;
 }
 
-/* Source chips grid — 2 rows × 3 cols */
+/* Source chips grid — 3 rows × 2 cols */
 .ls-source-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 5px;
   padding: 10px 10px 6px;
   flex-shrink: 0;
@@ -1946,14 +1946,14 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 8px 4px;
+  padding: 4px 2px;
   border-radius: 6px;
   border: 1px solid var(--border-dim);
   background: var(--bg-card);
   font-family: var(--font-mono);
 }
-.ls-stat-chip b    { font-size: 1.3rem; font-weight: 800; line-height: 1.1; }
-.ls-stat-chip span { font-size: 0.55rem; color: var(--text-secondary); letter-spacing: 0.08em; margin-top: 2px; }
+.ls-stat-chip b    { font-size: 1.1rem; font-weight: 800; line-height: 1.1; }
+.ls-stat-chip span { font-size: 0.5rem; color: var(--text-secondary); letter-spacing: 0.08em; margin-top: 1px; }
 .ls-sc-total { border-color: var(--border-mid); }
 .ls-sc-total b { color: var(--text-primary); }
 .ls-sc-allow b { color: var(--accent-green); }
