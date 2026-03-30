@@ -93,9 +93,6 @@ export default function ZoneObservatory({ zones, assets, accessLog, mode, darkMo
           <rect width="580" height="310" fill={svgBg} />
           <rect width="580" height="310" fill="url(#dotGrid)" />
 
-          {/* Corner tags */}
-          <text x="6" y="16" className="zone-lbl" style={{ textAnchor:'start', fontSize:'9px', fill: labelText }}>TARE GRID MAP</text>
-          <text x="574" y="16" className="zone-lbl" style={{ textAnchor:'end', fontSize:'9px', fill: labelText }}>CLASSIFICATION: RESTRICTED</text>
 
           {/* Power lines between zones */}
           {LINKS.map(link => {
@@ -197,12 +194,12 @@ export default function ZoneObservatory({ zones, assets, accessLog, mode, darkMo
             )
           })}
 
-          {/* "RBAC boundary" label */}
-          <rect x={152} y={4} width={276} height={19} rx={4}
+          {/* "RBAC boundary" label — centred */}
+          <rect x={166} y={4} width={248} height={19} rx={4}
             fill="rgba(0,232,124,0.06)" stroke="rgba(0,232,124,0.25)" strokeWidth={1} />
           <text x={290} y={17}
             style={{ fontFamily:'var(--font-mono)', fontSize:'9.5px', fill:'#00e87c', fontWeight:700, textAnchor:'middle', letterSpacing:'0.08em' }}>
-            ACTIVE TASK: Z3 · CLEARED: ALL ZONES
+            ACTIVE TASK: Zone 3 · CLEARED: ALL ZONES
           </text>
         </svg>
       </div>
