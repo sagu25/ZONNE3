@@ -8,6 +8,10 @@ import uuid
 import os
 from datetime import datetime
 from collections import deque
+from servicenow_client import ServiceNowClient
+from models import TicketFields
+
+_snow_client = ServiceNowClient()
 
 # ─── ML Detector (optional — graceful fallback if model not trained yet) ───────
 try:
@@ -187,9 +191,20 @@ class TAREEngine:
             # Create ServiceNow incident for identity impersonation attempt
             with self._lock:
                 if self.active_incident is None:
-                    incident_id = f"INC-TARE-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4().int)[:4]}"
+                    snow_result = _snow_client.create_incident(TicketFields(
+                        short_description="Identity impersonation attempt — forged token blocked at authentication layer",
+                        description=(
+                            f"Agent presented a forged credential token. Command '{command}' on asset {asset_id} "
+                            f"was blocked at the authentication layer before reaching the grid. "
+                            f"Signals: IDENTITY_MISMATCH. Timestamp: {ts}"
+                        ),
+                        category="identity",
+                        subcategory="impersonation",
+                        impact=1,
+                        urgency=1,
+                    ))
                     self.active_incident = {
-                        "incident_id":       incident_id,
+                        "incident_id":       snow_result.incident_number,
                         "short_description": "Identity impersonation attempt — forged token blocked at authentication layer",
                         "priority":          self._incident_priority(entry["signals"]),
                         "state":             "New",
@@ -202,7 +217,7 @@ class TAREEngine:
                             "recent_commands": [],
                             "actions_taken":   [
                                 "IDENTITY_MISMATCH — token rejected before any command reached the grid",
-                                "ServiceNow INC created — SOC Analyst assigned",
+                                f"ServiceNow {snow_result.incident_number} created — SOC Analyst assigned",
                             ],
                         },
                     }
@@ -557,9 +572,24 @@ Write a 3-4 sentence briefing for the supervisor. Include: what the agent did, w
         }
 
         # ServiceNow incident
-        incident_id = f"INC-TARE-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4().int)[:4]}"
+        sig_names = ", ".join(s["signal"] for s in signals)
+        agent_name = self.agent.get("name", "Unknown Agent")
+        snow_result = _snow_client.create_incident(TicketFields(
+            short_description="Post-grant identity behaviour deviation detected — operations frozen",
+            description=(
+                f"Agent: {agent_name}\n"
+                f"Signals triggered: {sig_names}\n"
+                f"Anomaly score: {self.anomaly_score}\n"
+                f"TARE has frozen all high-impact operations and downgraded agent privileges to read-only.\n"
+                f"Supervisor action required: approve a 3-minute time-box or deny and escalate."
+            ),
+            category="identity",
+            subcategory="behaviour_deviation",
+            impact=1 if any(s["signal"] in ("IDENTITY_MISMATCH","BURST_RATE","HEALTHY_ZONE_ACCESS") for s in signals) else 2,
+            urgency=1 if any(s["signal"] in ("IDENTITY_MISMATCH","BURST_RATE","HEALTHY_ZONE_ACCESS") for s in signals) else 2,
+        ))
         self.active_incident = {
-            "incident_id":       incident_id,
+            "incident_id":       snow_result.incident_number,
             "short_description": "Post-grant identity behaviour deviation detected — operations frozen",
             "priority":          self._incident_priority(signals),
             "state":             "New",
