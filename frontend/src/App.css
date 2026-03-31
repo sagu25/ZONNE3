@@ -1922,6 +1922,34 @@ html, body {
 [data-theme="light"] .snow-section { border-top-color: var(--border-dim); }
 [data-theme="light"] .snow-desc    { color: var(--text-secondary); }
 
+/* Priority banner — needs stronger contrast on light bg */
+[data-theme="light"] .snow-prio-banner {
+  background: rgba(255,45,45,0.1) !important;
+  border-color: rgba(255,45,45,0.6) !important;
+  color: #cc1a1a !important;
+}
+[data-theme="light"] .snow-prio-banner[style*="255,140"] {
+  background: rgba(255,140,0,0.12) !important;
+  border-color: rgba(200,100,0,0.6) !important;
+  color: #b35c00 !important;
+}
+[data-theme="light"] .snow-prio-full  { color: var(--text-primary) !important; font-weight: 800; }
+[data-theme="light"] .snow-prio-label { color: #fff !important; }
+[data-theme="light"] .snow-prio-inline { color: var(--text-primary) !important; font-weight: 700; }
+[data-theme="light"] .snow-badge { background: #cc1a1a; color: #fff; }
+[data-theme="light"] .snow-id    { color: #1a4fb5 !important; }
+[data-theme="light"] .snow-state { color: #a05000 !important; }
+[data-theme="light"] .snow-row span:first-child { color: var(--text-secondary); }
+[data-theme="light"] .snow-row span:last-child  { color: var(--text-primary) !important; }
+[data-theme="light"] .snow-section-label { color: var(--text-secondary); }
+[data-theme="light"] .snow-sig-chip { background: rgba(255,45,45,0.1); color: #cc1a1a; border-color: rgba(255,45,45,0.4); }
+[data-theme="light"] .snow-cmd-name  { color: #a05000 !important; }
+[data-theme="light"] .snow-cmd-asset { color: var(--text-primary) !important; }
+[data-theme="light"] .snow-cmd-zone  { color: var(--text-secondary) !important; }
+[data-theme="light"] .snow-score     { color: #cc1a1a !important; }
+[data-theme="light"] .snow-action-row { color: var(--text-secondary); }
+[data-theme="light"] .snow-empty     { color: var(--text-dim); }
+
 /* ── Mode ladder ──────────────────────────────────────────────── */
 [data-theme="light"] .step-dot       { background: var(--bg-card2); border-color: var(--border-mid); }
 [data-theme="light"] .step-connector { background: var(--border-dim); }
