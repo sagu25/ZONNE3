@@ -1,6 +1,51 @@
+import { useState } from 'react'
 import ZoneGISMap from './ZoneGISMap'
 
 export const ZONE_DISPLAY = { Z1: 'Zone 1', Z2: 'Zone 2', Z3: 'Zone 3' }
+
+const ALL_AGENTS = {
+  TARE: {
+    name: 'TARE',
+    role: 'Central Decision Engine',
+    color: '#00d4ff',
+    icon: '⚡',
+    desc: 'Trusted Access Response Engine — the central post-grant decision engine. Evaluates agent behaviour over time and enforces Freeze, Downgrade, Time-box, and Escalation actions while keeping humans in control of high-impact decisions.',
+  },
+  KORAL: {
+    name: 'KORAL',
+    role: 'Telemetry Observer',
+    color: '#00e87c',
+    icon: '📡',
+    desc: 'Continuously collects telemetry, logs, and signals across systems without interpretation or action. Provides a trusted baseline of "what is happening" for all higher-level analysis.',
+  },
+  MAREA: {
+    name: 'MAREA',
+    role: 'Drift Analyst',
+    color: '#f59e0b',
+    icon: '📈',
+    desc: 'Analyses telemetry over time to detect behavioural drift — scope creep, tempo changes, or unusual patterns. Focuses on trends and deviations, not single events.',
+  },
+  TASYA: {
+    name: 'TASYA',
+    role: 'Context Correlator',
+    color: '#a855f7',
+    icon: '🔗',
+    desc: 'Correlates observed behaviour with operational context — incidents, maintenance windows, or known events. Determines whether observed actions make sense given the current situation.',
+  },
+  NEREUS: {
+    name: 'NEREUS',
+    role: 'Recommendation Agent',
+    color: '#ff9a3c',
+    icon: '💡',
+    desc: 'Synthesises drift and context into clear, human-readable recommendations. Never executes actions — only advises TARE on possible next steps.',
+  },
+}
+
+const ZONE_AGENTS = {
+  Z1: ['TARE', 'NEREUS', 'TASYA'],
+  Z2: ['TARE', 'MAREA', 'TASYA'],
+  Z3: ['TARE', 'KORAL', 'MAREA', 'NEREUS'],
+}
 
 export const ZONE_INFO = {
   Z1: {
@@ -78,12 +123,14 @@ export function ZoneIllustration({ zoneId, color }) {
 }
 
 export default function ZoneInfoModal({ zoneId, zones, assets, onClose }) {
+  const [hoveredAgent, setHoveredAgent] = useState(null)
   if (!zoneId) return null
   const info    = ZONE_INFO[zoneId]
   if (!info) return null
   const zState  = zones?.[zoneId] || {}
   const isFault = zState.health === 'FAULT'
   const faultMsg = zState.fault || null
+  const zoneAgentKeys = ZONE_AGENTS[zoneId] || []
 
   return (
     <div className="zone-modal-overlay" onClick={onClose}>
@@ -158,6 +205,38 @@ export default function ZoneInfoModal({ zoneId, zones, assets, onClose }) {
                 </div>
               )
             })}
+          </div>
+
+          {/* Agent chips */}
+          <div className="zm3-agents-section">
+            <div className="zm3-section-label" style={{ marginTop: '14px' }}>Active Agents</div>
+            <div className="zm3-agent-chips">
+              {zoneAgentKeys.map(key => {
+                const ag = ALL_AGENTS[key]
+                if (!ag) return null
+                return (
+                  <div
+                    key={key}
+                    className="zm3-agent-chip"
+                    style={{ borderColor: ag.color + '60', background: ag.color + '12' }}
+                    onMouseEnter={() => setHoveredAgent(key)}
+                    onMouseLeave={() => setHoveredAgent(null)}
+                  >
+                    <span className="zm3-agent-icon">{ag.icon}</span>
+                    <div className="zm3-agent-info">
+                      <span className="zm3-agent-name" style={{ color: ag.color }}>{ag.name}</span>
+                      <span className="zm3-agent-role">{ag.role}</span>
+                    </div>
+                    {hoveredAgent === key && (
+                      <div className="zm3-agent-tooltip">
+                        <div className="zm3-tooltip-name" style={{ color: ag.color }}>{ag.icon} {ag.name}</div>
+                        <div className="zm3-tooltip-desc">{ag.desc}</div>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
           </div>
         </div>
 

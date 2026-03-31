@@ -2543,6 +2543,44 @@ html, body {
   line-height: 1.6;
 }
 
+/* ── Zone modal: Agent chips ── */
+.zm3-agents-section { padding: 0 14px 14px; }
+.zm3-agent-chips { display: flex; flex-direction: column; gap: 7px; }
+
+.zm3-agent-chip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border: 1px solid;
+  border-radius: 8px;
+  cursor: default;
+  transition: filter 0.15s;
+}
+.zm3-agent-chip:hover { filter: brightness(1.15); }
+
+.zm3-agent-icon { font-size: 1.1rem; line-height: 1; flex-shrink: 0; }
+.zm3-agent-info { display: flex; flex-direction: column; gap: 1px; }
+.zm3-agent-name { font-size: 0.82rem; font-weight: 700; font-family: var(--font-mono); letter-spacing: 0.06em; }
+.zm3-agent-role { font-size: 0.68rem; color: var(--text-secondary); letter-spacing: 0.03em; }
+
+.zm3-agent-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: rgba(4, 10, 20, 0.97);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 10px 12px;
+  pointer-events: none;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+}
+.zm3-tooltip-name { font-size: 0.8rem; font-weight: 700; font-family: var(--font-mono); margin-bottom: 5px; }
+.zm3-tooltip-desc { font-size: 0.72rem; color: var(--text-secondary); line-height: 1.55; }
+
 /* ════════════════════════════════════════════════════════════════
    NARRATION BAR — floating persistent control on dashboard
    ════════════════════════════════════════════════════════════════ */
