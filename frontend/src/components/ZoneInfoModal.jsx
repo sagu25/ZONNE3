@@ -181,7 +181,7 @@ export default function ZoneInfoModal({ zoneId, zones, assets, onClose }) {
             {/* Agent chips — 2 per row */}
             {zoneAgentKeys.length > 0 && (
               <div className="zm3-agents-section">
-                <div className="zm3-section-label" style={{ marginTop: '22px' }}>Active Agents</div>
+                <div className="zm3-section-label zm3-agents-label">Active Agents</div>
                 <div className="zm3-agent-chips">
                   {zoneAgentKeys.map(key => {
                     const ag = ALL_AGENTS[key]

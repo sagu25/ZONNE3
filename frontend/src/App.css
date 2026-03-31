@@ -2544,7 +2544,8 @@ html, body {
 }
 
 /* ── Zone modal: Agent chips ── */
-.zm3-agents-section { padding: 0 0 14px; margin-top: 10px; }
+.zm3-agents-section { padding: 0 0 14px; margin-top: 28px; }
+.zm3-agents-label { font-size: 0.75rem !important; margin-bottom: 10px; }
 .zm3-agent-chips { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
 
 .zm3-agent-chip {
