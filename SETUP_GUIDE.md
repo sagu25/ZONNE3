@@ -115,7 +115,7 @@ The landing page displays:
 **Narrated presentation flow:**
 1. Click **▶ Play Narration** — voice starts automatically
 2. Click **Launch Demo →** when ready — narration continues seamlessly on dashboard
-3. Use the **NarrationBar** (floating bottom strip) to pause/mute/resume at any time
+3. Use the **narration controls** in the Live Event Monitor (right panel) to pause/mute/resume at any time
 
 **Manual presentation:**
 1. Walk through landing page yourself
@@ -142,12 +142,10 @@ All six scenarios are in the **▶ Scenarios** dropdown on the right panel.
 
 ## What You Will See
 
-### NarrationBar (floating bottom strip)
-Persists across the full demo. Shows current narration line + progress bar.
-- **▶ / ⏸** — play / pause
-- **■** — stop
+### Narration Controls (Live Event Monitor — right panel)
+- **▶ Start / ⏸ Pause** — play or pause narration
+- **■ Stop** — end narration
 - **🔊 / 🔇** — mute toggle
-- **▼** — collapse out of the way
 
 ### Narrative Banner (top scrolling ticker)
 Plain-English description of what is happening.
@@ -156,7 +154,7 @@ Shows TARE lifecycle: NORMAL → FREEZE → DOWNGRADE → TIME-BOX → SAFE
 ### Zone Observatory (centre)
 Live SVG grid map. Click any zone to open the **Zone Info Modal**:
 - **Left:** live Leaflet GIS map (real London geography, power line overlays)
-- **Centre:** zone type, fault alert, description
+- **Centre:** zone type, fault alert, description + **Active Agents** (2-per-row chips, hover for role details)
 - **Right:** asset cards (BRK + FDR) with live state badges
 
 ### Left Panel
@@ -276,4 +274,4 @@ PORT CONFLICT?
 
 *TARE AEGIS-ID — Setup & Run Guide*
 *Energy & Utilities Security Platform — Internal Use Only*
-*Version: POC v3.4 — March 2026*
+*Version: POC v3.5 — March 2026*
