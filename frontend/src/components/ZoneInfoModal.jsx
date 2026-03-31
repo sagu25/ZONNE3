@@ -42,9 +42,9 @@ const ALL_AGENTS = {
 }
 
 const ZONE_AGENTS = {
-  Z1: ['TARE', 'NEREUS', 'TASYA'],
-  Z2: ['TARE', 'MAREA', 'TASYA'],
-  Z3: ['TARE', 'KORAL', 'MAREA', 'NEREUS'],
+  Z1: ['TARE'],
+  Z2: ['TARE'],
+  Z3: ['TARE', 'KORAL', 'MAREA', 'TASYA', 'NEREUS'],
 }
 
 export const ZONE_INFO = {
