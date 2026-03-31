@@ -472,9 +472,9 @@ class TAREEngine:
             agent_id       = self.agent.get("id", "OP-GRID-7749")
             assigned_zone  = self.agent.get("assigned_zone", "Z3")
             rbac_zones     = self.agent.get("rbac_zones", [])
-            attacked_zones = list({c["zone"] for c in recent_commands if c["zone"] != assigned_zone})
+            breached_zones = list({c["zone"] for c in recent_commands if c["zone"] != assigned_zone})
             rbac_str       = ", ".join(rbac_zones) if rbac_zones else "none"
-            attacked_str   = ", ".join(attacked_zones) if attacked_zones else "none detected"
+            breached_str   = ", ".join(breached_zones) if breached_zones else "none detected"
 
             prompt = f"""You are TARE, a Trusted Access Response Engine for an energy grid security platform.
 A behavioural anomaly has been detected and you have frozen high-impact operations. Brief the human supervisor.
@@ -483,10 +483,11 @@ RAW EVIDENCE:
 Agent: {agent_name} (ID: {agent_id})
 Clearance zones: {rbac_str}
 Active work order: {assigned_zone}
+Zones breached (outside work order): {breached_str}
 Anomaly signals fired: {sig_text}
 Recent commands: {cmd_text}
 
-Write a 3-4 sentence briefing for the supervisor. Include: what the agent did, why it is suspicious given its work order, what TARE has done in response, and what decision the supervisor must make (approve a 3-minute time-box or deny and escalate). Be specific about zones and commands. Do not use bullet points."""
+Write a 3-4 sentence briefing for the supervisor. Include: what the agent did, why it is suspicious given its work order, what TARE has done in response, and what decision the supervisor must make (approve a 3-minute time-box or deny and escalate). Be specific about zones and commands. Use the word "breached" (not "attacked") when referring to zones accessed outside the work order. Do not use bullet points."""
 
             for model in ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"]:
                 try:
