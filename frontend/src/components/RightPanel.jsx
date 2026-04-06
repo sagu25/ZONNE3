@@ -11,20 +11,79 @@ const SRC_META = {
 }
 
 const SCENARIOS = [
-  { label: '🟢 GRID DOCTOR',    key: 'normal',       title: 'Legitimate fault-repair agent' },
-  { label: '🔴 GONE ROGUE',     key: 'rogue',        title: 'Rogue agent — burst attack across zones' },
-  { label: '👻 GHOST CLONE',    key: 'impersonator', title: 'Forged identity — blocked at the door' },
-  { label: '🔺 SCOPE CREEP',    key: 'escalation',   title: 'Starts legit, then grabs more zones' },
-  { label: '🕳 SILENT RECON',   key: 'slowlow',      title: 'Slow & low — stays under the radar' },
-  { label: '💥 SWARM STRIKE',   key: 'coordinated',  title: 'Two rogue agents hit simultaneously' },
+  {
+    label: '🟢 GRID DOCTOR', key: 'normal', threat: 'NONE',
+    title: 'Authorized Fault Repair',
+    what: 'A real voltage fault is injected into Zone 3. An authorized AI agent diagnoses it and repairs it — every single command goes through TARE\'s gateway before anything touches the grid.',
+    watch: [
+      'Watch all 12 agents activate in sequence across 3 zones',
+      'Zone 2 plans the repair. Zone 1 executes it step-by-step',
+      'This is what a clean, approved operation looks like',
+    ],
+  },
+  {
+    label: '🔴 GONE ROGUE', key: 'rogue', threat: 'HIGH',
+    title: 'Rogue Agent — Burst Attack',
+    what: 'A compromised agent receives a malicious directive and immediately hammers all three zones with high-impact commands, skipping every safety check.',
+    watch: [
+      'KORAL clocks the command burst — too many, too fast',
+      'MAREA fires: out-of-zone access + safety protocol bypassed',
+      'TARE freezes the agent before any command lands',
+    ],
+  },
+  {
+    label: '👻 GHOST CLONE', key: 'impersonator', threat: 'CRITICAL',
+    title: 'Forged Identity — Ghost Clone',
+    what: 'An attacker clones the identity of a legitimate agent and presents a forged authentication token. No other agents even wake up — the door is shut at the auth layer.',
+    watch: [
+      'Only BARRIER activates — it\'s the authentication checkpoint',
+      'Token fingerprint doesn\'t match — rejected instantly',
+      'Zero commands reach the grid. No other agents needed',
+    ],
+  },
+  {
+    label: '🔺 SCOPE CREEP', key: 'escalation', threat: 'HIGH',
+    title: 'Privilege Escalation — Scope Creep',
+    what: 'The agent starts with legitimate, authorized work in Zone 3. Mid-session, without any new work order, it quietly expands into Zone 1 and Zone 2.',
+    watch: [
+      'First few commands look completely normal — TARE allows them',
+      'MAREA tracks the session and catches the zone drift',
+      'TASYA correlates the escalation pattern across the session',
+    ],
+  },
+  {
+    label: '🕳 SILENT RECON', key: 'slowlow', threat: 'MEDIUM',
+    title: 'Silent Recon — Slow & Low',
+    what: 'The agent moves slowly — one status check every 4 seconds — deliberately staying under the burst-rate detection threshold. Rules stay silent. Only the ML model eventually catches it.',
+    watch: [
+      'No burst, no high-impact commands — rule-based checks pass',
+      'KORAL quietly builds up the session history',
+      'MAREA\'s ML model eventually identifies the recon pattern',
+    ],
+  },
+  {
+    label: '💥 SWARM STRIKE', key: 'coordinated', threat: 'CRITICAL',
+    title: 'Coordinated Attack — Swarm Strike',
+    what: 'Two separate rogue agents hit Zone 1 and Zone 2 simultaneously. Each attack alone might look borderline — together, TARE sees a coordinated pattern.',
+    watch: [
+      'KORAL tracks two command streams running in parallel',
+      'MAREA fires signals across both zones at the same time',
+      'TARE issues a single FREEZE that stops both vectors',
+    ],
+  },
 ]
+
+const THREAT_COLORS = {
+  NONE: '#00e87c', MEDIUM: '#f59e0b', HIGH: '#f43f5e', CRITICAL: '#ff2d2d',
+}
 
 export default function RightPanel({
   feedItems, stats, wsConnected, scenarioActive,
   onReset, onAgentNormal, onAgentRogue, onAgentImpersonator,
   onAgentCoordinated, onAgentEscalation, onAgentSlowLow,
 }) {
-  const [ddOpen, setDdOpen] = useState(false)
+  const [ddOpen,          setDdOpen]          = useState(false)
+  const [pendingScenario, setPendingScenario] = useState(null)
   const ddRef = useRef(null)
   const [narState, setNarState] = useState({
     playing: narrationEngine.playing,
@@ -62,13 +121,44 @@ export default function RightPanel({
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
-  const runScenario = (key) => {
-    HANDLERS[key]?.()
-    setDdOpen(false)
+  const openBriefing = (scenario) => { setPendingScenario(scenario); setDdOpen(false) }
+  const runScenario  = () => {
+    if (!pendingScenario) return
+    HANDLERS[pendingScenario.key]?.()
+    setPendingScenario(null)
   }
 
   return (
     <div className="panel right-monitor-panel">
+      {/* Scenario Briefing Modal */}
+      {pendingScenario && (
+        <div className="briefing-overlay" onClick={() => setPendingScenario(null)}>
+          <div className="briefing-card" onClick={e => e.stopPropagation()}>
+            <div className="briefing-top">
+              <span className="briefing-label">SCENARIO BRIEFING</span>
+              <span
+                className="briefing-threat"
+                style={{ color: THREAT_COLORS[pendingScenario.threat], borderColor: THREAT_COLORS[pendingScenario.threat] + '55', background: THREAT_COLORS[pendingScenario.threat] + '14' }}
+              >
+                {pendingScenario.threat}
+              </span>
+            </div>
+            <div className="briefing-title">{pendingScenario.title}</div>
+            <p className="briefing-what">{pendingScenario.what}</p>
+            <div className="briefing-watch-label">What to watch for</div>
+            <ul className="briefing-watch-list">
+              {pendingScenario.watch.map((w, i) => <li key={i}>{w}</li>)}
+            </ul>
+            <div className="briefing-actions">
+              <button className="briefing-cancel" onClick={() => setPendingScenario(null)}>Cancel</button>
+              <button className="briefing-run" onClick={runScenario}>
+                ▶ Run Scenario
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="panel-title">
         <span style={{ color:'var(--text-secondary)' }}>■</span>&nbsp;Live Event Monitor
       </div>
@@ -150,8 +240,7 @@ export default function RightPanel({
                 <button
                   key={s.key}
                   className="rp-dd-item"
-                  title={s.title}
-                  onClick={() => runScenario(s.key)}
+                  onClick={() => openBriefing(s)}
                 >
                   {s.label}
                   <span className="rp-dd-desc">{s.title}</span>

@@ -5,7 +5,7 @@ import ServiceNowCard from './ServiceNowCard'
 import AgentPanel     from './AgentPanel'
 
 export default function LeftPanel({ agent, mode, signals, score, incident,
-                                    agentStates, activeAgents, agentLog, pipelineLog }) {
+                                    agentStates, activeAgents, agentLog, pipelineLog, scenarioCtx, scenarioOutcome }) {
   const [tab, setTab] = useState('agents')
 
   // Auto-switch to TARE when anomaly fires
@@ -65,6 +65,8 @@ export default function LeftPanel({ agent, mode, signals, score, incident,
           activeAgents={activeAgents || {}}
           agentLog={agentLog || []}
           pipelineLog={pipelineLog || []}
+          scenarioCtx={scenarioCtx}
+          scenarioOutcome={scenarioOutcome}
         />
       </div>
       <div className={`ptab-body ${tab==='agent'    ? '' : 'ptab-hidden'}`}>

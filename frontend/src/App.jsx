@@ -64,6 +64,8 @@ export default function App() {
   const [activeAgents,   setActiveAgents]   = useState({})
   const [agentLog,       setAgentLog]       = useState([])
   const [pipelineLog,    setPipelineLog]    = useState([])
+  const [scenarioCtx,    setScenarioCtx]    = useState(null)
+  const [scenarioOutcome,setScenarioOutcome]= useState(null)
   const wsRef         = useRef(null)
   const prevModeRef   = useRef('NORMAL')
   const firstConnRef  = useRef(true)
@@ -83,10 +85,20 @@ export default function App() {
         setSnap(msg)
         if (msg.agent_states) setAgentStates(msg.agent_states)
         break
+      case 'SCENARIO_START':
+        setScenarioCtx(msg)
+        setScenarioOutcome(null)
+        setActiveAgents({}); setAgentLog([]); setPipelineLog([])
+        break
+      case 'SCENARIO_END':
+        setScenarioOutcome(msg)
+        break
       case 'RESET':
         setSnap(INITIAL_STATE); setChatMsgs([]); setFeedItems([])
         setShowApprove(false); setScenarioActive(false)
         setActiveAgents({}); setAgentLog([]); setPipelineLog([])
+        setScenarioCtx(null)
+        setScenarioOutcome(null)
         addFeed('info', 'TARE', msg.message); break
       case 'GATEWAY_DECISION': {
         const lvl = msg.decision === 'ALLOW' ? 'info' : 'danger'
@@ -208,7 +220,8 @@ export default function App() {
           {/* LEFT — full height */}
           <div className="grid-left">
             <LeftPanel agent={snap.agent} mode={snap.mode} signals={snap.anomaly_signals} score={snap.anomaly_score} incident={snap.active_incident}
-              agentStates={agentStates} activeAgents={activeAgents} agentLog={agentLog} pipelineLog={pipelineLog} />
+              agentStates={agentStates} activeAgents={activeAgents} agentLog={agentLog} pipelineLog={pipelineLog}
+              scenarioCtx={scenarioCtx} scenarioOutcome={scenarioOutcome} />
           </div>
 
           {/* TOP CENTER — Zone Observatory */}
