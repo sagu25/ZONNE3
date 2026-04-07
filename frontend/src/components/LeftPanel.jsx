@@ -5,7 +5,9 @@ import ServiceNowCard from './ServiceNowCard'
 import AgentPanel     from './AgentPanel'
 
 export default function LeftPanel({ agent, mode, signals, score, incident,
-                                    agentStates, activeAgents, agentLog, pipelineLog, scenarioCtx, scenarioOutcome }) {
+                                    agentStates, activeAgents, agentLog, pipelineLog,
+                                    scenarioCtx, scenarioOutcome, agentVoices,
+                                    voiceMuted, onToggleVoice }) {
   const [tab, setTab] = useState('agents')
 
   // Auto-switch to TARE when anomaly fires
@@ -60,6 +62,17 @@ export default function LeftPanel({ agent, mode, signals, score, incident,
       </div>
 
       <div className={`ptab-body ${tab==='agents'   ? '' : 'ptab-hidden'}`}>
+        {/* Voice mute toggle */}
+        <div className="lp-voice-bar">
+          <span className="lp-voice-label">🔊 Agent Voices</span>
+          <button
+            className={`lp-voice-btn ${voiceMuted ? 'lp-voice-muted' : 'lp-voice-on'}`}
+            onClick={onToggleVoice}
+            title={voiceMuted ? 'Unmute agent voices' : 'Mute agent voices'}
+          >
+            {voiceMuted ? '🔇 Muted' : '🔊 On'}
+          </button>
+        </div>
         <AgentPanel
           agentStates={agentStates || {}}
           activeAgents={activeAgents || {}}
@@ -67,6 +80,7 @@ export default function LeftPanel({ agent, mode, signals, score, incident,
           pipelineLog={pipelineLog || []}
           scenarioCtx={scenarioCtx}
           scenarioOutcome={scenarioOutcome}
+          agentVoices={agentVoices}
         />
       </div>
       <div className={`ptab-body ${tab==='agent'    ? '' : 'ptab-hidden'}`}>

@@ -3646,3 +3646,63 @@ html, body {
   text-transform: uppercase;
   letter-spacing: 0.07em;
 }
+
+/* ── Agent voice bubble ────────────────────────────────── */
+.ap-step-voice {
+  font-size: 0.62rem;
+  font-style: italic;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  line-height: 1.55;
+  border-left: 2px solid;
+  padding-left: 7px;
+  animation: voice-appear 0.35s ease;
+}
+@keyframes voice-appear {
+  from { opacity: 0; transform: translateX(-4px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.ap-step-voice-quote {
+  font-size: 0.85rem;
+  font-style: normal;
+  opacity: 0.35;
+  margin: 0 1px;
+}
+
+/* ── Voice control bar (LeftPanel) ────────────────────────────── */
+.lp-voice-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.lp-voice-label {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+}
+.lp-voice-btn {
+  font-size: 0.68rem;
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 1px solid;
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  transition: opacity 0.15s;
+}
+.lp-voice-on {
+  background: #00d4ff18;
+  border-color: #00d4ff66;
+  color: #00d4ff;
+}
+.lp-voice-muted {
+  background: #f43f5e18;
+  border-color: #f43f5e66;
+  color: #f43f5e;
+}
+.lp-voice-btn:hover { opacity: 0.75; }

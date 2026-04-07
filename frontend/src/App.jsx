@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { speakAgent, setVoiceMuted, isVoiceMuted, clearVoiceQueue } from './agentVoices'
 import Header          from './components/Header'
 import NarrativeBanner from './components/NarrativeBanner'
 import ZoneObservatory from './components/ZoneObservatory'
@@ -66,6 +67,8 @@ export default function App() {
   const [pipelineLog,    setPipelineLog]    = useState([])
   const [scenarioCtx,    setScenarioCtx]    = useState(null)
   const [scenarioOutcome,setScenarioOutcome]= useState(null)
+  const [agentVoices,    setAgentVoices]    = useState({})
+  const [voiceMuted,     setVoiceMuted_]    = useState(false)
   const wsRef         = useRef(null)
   const prevModeRef   = useRef('NORMAL')
   const firstConnRef  = useRef(true)
@@ -88,7 +91,12 @@ export default function App() {
       case 'SCENARIO_START':
         setScenarioCtx(msg)
         setScenarioOutcome(null)
+        setAgentVoices({})
         setActiveAgents({}); setAgentLog([]); setPipelineLog([])
+        break
+      case 'AGENT_VOICE':
+        setAgentVoices(prev => ({ ...prev, [msg.agent]: msg.message }))
+        speakAgent(msg.agent, msg.message)
         break
       case 'SCENARIO_END':
         setScenarioOutcome(msg)
@@ -99,6 +107,8 @@ export default function App() {
         setActiveAgents({}); setAgentLog([]); setPipelineLog([])
         setScenarioCtx(null)
         setScenarioOutcome(null)
+        setAgentVoices({})
+        clearVoiceQueue()
         addFeed('info', 'TARE', msg.message); break
       case 'GATEWAY_DECISION': {
         const lvl = msg.decision === 'ALLOW' ? 'info' : 'danger'
@@ -221,7 +231,13 @@ export default function App() {
           <div className="grid-left">
             <LeftPanel agent={snap.agent} mode={snap.mode} signals={snap.anomaly_signals} score={snap.anomaly_score} incident={snap.active_incident}
               agentStates={agentStates} activeAgents={activeAgents} agentLog={agentLog} pipelineLog={pipelineLog}
-              scenarioCtx={scenarioCtx} scenarioOutcome={scenarioOutcome} />
+              scenarioCtx={scenarioCtx} scenarioOutcome={scenarioOutcome} agentVoices={agentVoices}
+              voiceMuted={voiceMuted}
+              onToggleVoice={() => {
+                const next = !voiceMuted
+                setVoiceMuted_(next)
+                setVoiceMuted(next)
+              }} />
           </div>
 
           {/* TOP CENTER — Zone Observatory */}

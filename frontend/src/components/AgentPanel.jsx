@@ -32,7 +32,7 @@ const THREAT_COLORS = {
   CRITICAL: '#ff2d2d',
 }
 
-export default function AgentPanel({ agentStates = {}, activeAgents = {}, agentLog = [], pipelineLog = [], scenarioCtx = null, scenarioOutcome = null }) {
+export default function AgentPanel({ agentStates = {}, activeAgents = {}, agentLog = [], pipelineLog = [], scenarioCtx = null, scenarioOutcome = null, agentVoices = {} }) {
   const totalActive = Object.keys(activeAgents).length
   const hasActivity = totalActive > 0 || agentLog.length > 0
 
@@ -41,7 +41,7 @@ export default function AgentPanel({ agentStates = {}, activeAgents = {}, agentL
       {scenarioCtx && <ScenarioHeader ctx={scenarioCtx} />}
       {scenarioOutcome && <OutcomeCard outcome={scenarioOutcome} />}
       {!scenarioOutcome && hasActivity && (
-        <MissionFlow activeAgents={activeAgents} agentLog={agentLog} pipelineLog={pipelineLog} agentStates={agentStates} />
+        <MissionFlow activeAgents={activeAgents} agentLog={agentLog} pipelineLog={pipelineLog} agentStates={agentStates} agentVoices={agentVoices} />
       )}
       {!scenarioOutcome && !hasActivity && !scenarioCtx && <StandbyView />}
       {!scenarioOutcome && !hasActivity && scenarioCtx && (
@@ -109,12 +109,9 @@ function StandbyView() {
 }
 
 /* ── Mission Flow: scenario in progress ───────────────── */
-function MissionFlow({ activeAgents, agentLog, pipelineLog, agentStates }) {
+function MissionFlow({ activeAgents, agentLog, pipelineLog, agentStates, agentVoices }) {
   const totalActive = Object.keys(activeAgents).length
-
-  // Build ordered timeline: each wake event becomes a step
-  // We show the last ~12 wake events
-  const steps = agentLog.filter(e => e.action === 'wake').slice(0, 12)
+  const steps = agentLog.filter(e => e.action === 'wake').slice(0, 14)
 
   return (
     <div className="ap-flow">
@@ -130,8 +127,7 @@ function MissionFlow({ activeAgents, agentLog, pipelineLog, agentStates }) {
         {steps.map((step, i) => {
           const def    = AGENT_DEFS[step.agent] || {}
           const isLive = !!activeAgents[step.agent]
-          // Get latest pipeline message for this agent
-          const latest = pipelineLog.find(p => p.agent === step.agent)
+          const voice  = agentVoices[step.agent]
           return (
             <div key={i} className={`ap-step ${isLive ? 'ap-step-live' : 'ap-step-done'}`}>
               <div className="ap-step-left">
@@ -152,30 +148,23 @@ function MissionFlow({ activeAgents, agentLog, pipelineLog, agentStates }) {
                   <span className="ap-step-role">{def.role}</span>
                   {isLive && <span className="ap-step-live-tag">live</span>}
                 </div>
-                <div className="ap-step-task">
-                  {latest?.message || step.task}
-                </div>
+                {/* Agent voice — first-person, italic */}
+                {voice && (
+                  <div className="ap-step-voice" style={{ borderLeftColor: def.color + '88' }}>
+                    <span className="ap-step-voice-quote">"</span>
+                    {voice}
+                    <span className="ap-step-voice-quote">"</span>
+                  </div>
+                )}
+                {/* Fallback task label when no voice yet */}
+                {!voice && (
+                  <div className="ap-step-task">{step.task}</div>
+                )}
               </div>
             </div>
           )
         })}
       </div>
-
-      {/* Latest pipeline narration */}
-      {pipelineLog.length > 0 && (
-        <div className="ap-narration">
-          <div className="ap-nar-label">Latest</div>
-          {pipelineLog.slice(0, 3).map((p, i) => {
-            const def = AGENT_DEFS[p.agent] || {}
-            return (
-              <div key={i} className="ap-nar-row">
-                <span className="ap-nar-agent" style={{ color: def.color }}>{p.agent}</span>
-                <span className="ap-nar-msg">{p.message}</span>
-              </div>
-            )
-          })}
-        </div>
-      )}
     </div>
   )
 }

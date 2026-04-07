@@ -210,11 +210,19 @@ class TAREEngine:
             self._broadcast_agent_wake("KORAL", "Recording telemetry")
             self.koral.observe(rec)
             self._broadcast_agent_sleep("KORAL")
+            recent_n = len([t for t in self.koral.get_burst_window() if now - t < 10])
+            total_n  = self.koral._total_observed
+            if recent_n > 3:
+                self._voice("KORAL", f"Logged. {recent_n} commands in the last 10 seconds — that's above the normal rate. Flagging to MAREA.")
+            else:
+                self._voice("KORAL", f"Logged. {total_n} command(s) on record this session. Rate looks normal.")
 
             # ── Step 3: BARRIER enforces current mode ──────────────────────────
             self._broadcast_agent_wake("BARRIER", f"Enforcing {self.mode} policy")
             decision, reason, policy = self.barrier.enforce(command, zone)
             self._broadcast_agent_sleep("BARRIER")
+            if decision == "DENY":
+                self._voice("BARRIER", f"Denied. {command} on {asset_id} does not clear policy in {self.mode} mode. Nothing executes.")
 
             signals = []
 
@@ -232,18 +240,32 @@ class TAREEngine:
                     now         = now,
                 )
                 self._broadcast_agent_sleep("MAREA")
+                if not signals:
+                    self._voice("MAREA", f"Clear. {command} in {zone} is within baseline — zone, rate, and protocol all check out.")
+                elif len(signals) == 1:
+                    sn = signals[0]['signal'].replace('_', ' ').lower()
+                    self._voice("MAREA", f"One signal: {sn}. Watching. Not enough to act yet — if another fires, I'm escalating.")
+                else:
+                    names = ', '.join(s['signal'].replace('_', ' ').lower() for s in signals)
+                    self._voice("MAREA", f"{len(signals)} signals: {names}. This is a pattern, not a one-off. Passing to TASYA.")
 
                 # ── Step 5: TASYA correlates context ──────────────────────────
                 if signals:
                     self._broadcast_agent_wake("TASYA", f"Correlating context for {len(signals)} signal(s)")
                     signals = self.tasya.correlate(signals, self.agent, self.zones)
                     self._broadcast_agent_sleep("TASYA")
+                    assigned = self.agent.get("assigned_zone", "Z3")
+                    if len(signals) >= 2:
+                        self._voice("TASYA", f"Checked the session. Agent's work order is {assigned} — no authorisation exists for {zone}. {len(signals)} signals confirmed with context. Passing to NEREUS.")
+                    else:
+                        self._voice("TASYA", f"Context noted. One signal in scope — work order is {assigned}. Monitoring.")
 
                 # ── Step 6: NEREUS recommends if threshold met ─────────────────
                 if len(signals) == 1:
                     # Soft advisory — one signal, NEREUS observes but TARE holds
                     sig_name = signals[0].get("signal", "UNKNOWN")
                     self._broadcast_agent_wake("NEREUS", f"Soft advisory — 1 signal ({sig_name})")
+                    self._voice("NEREUS", f"One signal isn't enough for me to act. I'm watching the session — if MAREA fires again, my recommendation will be FREEZE.")
                     self._broadcast({
                         "type":    "CHAT_MESSAGE",
                         "role":    "tare",
@@ -263,6 +285,12 @@ class TAREEngine:
                         agent           = self.agent,
                         recent_commands = self.koral.get_session(30),
                     )
+                    action = recommendation.get("action", "MONITOR")
+                    sig_list = ', '.join(s['signal'].replace('_',' ').lower() for s in signals)
+                    if action == "FREEZE":
+                        self._voice("NEREUS", f"{len(signals)} corroborated signals — {sig_list}. No operational justification. My recommendation is FREEZE. TARE has the final call.")
+                    else:
+                        self._voice("NEREUS", f"Signals present but context is ambiguous. Advising watch mode for now.")
                     self._broadcast_agent_sleep("NEREUS")
 
                     # ── Step 7: TARE decides ───────────────────────────────────
@@ -424,6 +452,12 @@ class TAREEngine:
         self._broadcast_agent_sleep("ECHO")
         self._broadcast({"type": "PIPELINE_UPDATE", "agent": "ECHO",
             "result": echo_result, "message": echo_result["findings"]})
+        if echo_result["confirmed"]:
+            fz = ', '.join(echo_result["fault_zones"])
+            ta = ', '.join(echo_result["target_assets"])
+            self._voice("ECHO", f"Fault confirmed in {fz}. Target asset is {ta}. Repair path is clear — passing to SIMAR for simulation.")
+        else:
+            self._voice("ECHO", "Diagnostic inconclusive. I can't confirm a clear repair target — I won't build a plan without solid evidence.")
 
         if not echo_result["confirmed"]:
             self._broadcast({"type": "CHAT_MESSAGE", "role": "tare",
@@ -437,6 +471,11 @@ class TAREEngine:
         self._broadcast_agent_sleep("SIMAR")
         self._broadcast({"type": "PIPELINE_UPDATE", "agent": "SIMAR",
             "result": simar_result, "message": simar_result["summary"]})
+        if simar_result["safe_to_proceed"]:
+            self._voice("SIMAR", f"Simulation passed. Ran {len(echo_result['repair_actions'])} action(s) against the model — no unsafe conditions. Safe to build the plan.")
+        else:
+            risks = ', '.join(str(r) for r in simar_result.get("risk_indicators", []))
+            self._voice("SIMAR", f"Simulation flagged a problem: {risks}. I'm not signing off on this — the live grid stays untouched.")
 
         if not simar_result["safe_to_proceed"]:
             self._broadcast({"type": "CHAT_MESSAGE", "role": "tare",
@@ -450,6 +489,10 @@ class TAREEngine:
         self._broadcast_agent_sleep("NAVIS")
         self._broadcast({"type": "PIPELINE_UPDATE", "agent": "NAVIS",
             "result": plan, "message": f"Plan ready: {plan['goal']} — {len(plan['steps'])} step(s)"})
+        if plan["ready"]:
+            self._voice("NAVIS", f"Plan built. {len(plan['steps'])} step(s), NERC CIP compliant, rollback path included. Sending to RISKADOR for risk scoring.")
+        else:
+            self._voice("NAVIS", f"Couldn't complete the plan: {plan.get('reason', 'unknown blocker')}. Not sending an incomplete plan to execution.")
 
         if not plan["ready"]:
             self._broadcast({"type": "CHAT_MESSAGE", "role": "tare",
@@ -463,6 +506,12 @@ class TAREEngine:
         self._broadcast_agent_sleep("RISKADOR")
         self._broadcast({"type": "PIPELINE_UPDATE", "agent": "RISKADOR",
             "result": risk, "message": f"Risk score {risk['composite_score']}/100 — {risk['recommendation']}: {risk['rationale']}"})
+        score = risk['composite_score']
+        rec   = risk['recommendation']
+        if rec == "PROCEED":
+            self._voice("RISKADOR", f"Score: {score}/100. Blast radius is acceptable, rollback path is verified. My call: proceed.")
+        else:
+            self._voice("RISKADOR", f"Score: {score}/100. Too risky to execute autonomously — {risk.get('rationale','risk threshold exceeded')}. Holding.")
 
         if risk["recommendation"] == "HOLD":
             self._broadcast({"type": "CHAT_MESSAGE", "role": "tare",
@@ -500,6 +549,7 @@ class TAREEngine:
         self.levier.arm(execute_fn=lambda cmd, asset, zone: self.process_command(cmd, asset, zone))
 
         self._broadcast_agent_wake("TEMPEST", "Armed — monitoring execution tempo")
+        self._voice("TEMPEST", f"Armed. Watching {len(plan['steps'])} step(s) — I'll call a halt if the pace goes wrong at any point.")
 
         completed_steps = []
         aborted = False
@@ -530,6 +580,10 @@ class TAREEngine:
             self._broadcast({"type": "PIPELINE_UPDATE", "agent": "AEGIS",
                 "result": aegis_result,
                 "message": f"Step {step['step_num']} {'CLEARED' if aegis_result['passed'] else 'VETOED'}: {cmd} — {aegis_result.get('veto_reason') or 'all checks passed'}"})
+            if aegis_result["passed"]:
+                self._voice("AEGIS", f"Step {step['step_num']} cleared. {cmd} on {asset_id} passes all safety interlocks. TRITON is clear to execute.")
+            else:
+                self._voice("AEGIS", f"Vetoed. {cmd} on {asset_id} failed the interlock check — {aegis_result.get('veto_reason', 'safety condition not met')}. Execution stops here.")
 
             if not aegis_result["passed"]:
                 self._broadcast({"type": "CHAT_MESSAGE", "role": "tare",
@@ -544,6 +598,11 @@ class TAREEngine:
             self._broadcast({"type": "PIPELINE_UPDATE", "agent": "TRITON",
                 "result": exec_result,
                 "message": f"Step {step['step_num']} {exec_result.get('status','?')}: {cmd} → {exec_result.get('decision','?')}"})
+            status = exec_result.get("status", "?")
+            if status == "EXECUTED":
+                self._voice("TRITON", f"Done. {cmd} on {asset_id} executed. Step {step['step_num']} complete — TEMPEST, your turn.")
+            else:
+                self._voice("TRITON", f"Step {step['step_num']} did not execute — gateway returned {exec_result.get('decision','?')}. Stopping.")
 
             if exec_result.get("status") == "EXECUTED":
                 completed_steps.append(exec_result)
@@ -568,6 +627,7 @@ class TAREEngine:
             self._broadcast({"type": "PIPELINE_UPDATE", "agent": "LEVIER",
                 "result": recovery,
                 "message": f"Rollback {recovery['status']} — {recovery['steps_executed']}/{recovery['steps_planned']} steps reverted"})
+            self._voice("LEVIER", f"Rollback {recovery['status']}. {recovery['steps_executed']} of {recovery['steps_planned']} step(s) reverted. Grid is back to pre-execution state.")
             self._broadcast({"type": "CHAT_MESSAGE", "role": "tare",
                 "message": f"LEVIER finished the rollback — {recovery['steps_executed']} step(s) reverted. The grid is back to its pre-execution state. Everything is stable."})
         elif not aborted:
@@ -610,6 +670,7 @@ class TAREEngine:
             "token":   token,
             "message": "Forged credential detected — access blocked at authentication layer",
         })
+        self._voice("BARRIER", f"Token rejected. The credential presented for {command} does not match any registered agent. This never reaches the grid.")
 
         # BARRIER blocks — ServiceNow incident
         with self._lock:
@@ -768,6 +829,14 @@ class TAREEngine:
         self._broadcast({
             "type":  "AGENT_SLEEP",
             "agent": agent_name,
+        })
+
+    def _voice(self, agent_name: str, message: str):
+        """Broadcast a first-person agent voice message for the UI timeline."""
+        self._broadcast({
+            "type":    "AGENT_VOICE",
+            "agent":   agent_name,
+            "message": message,
         })
 
     def _set_mode(self, new_mode: str):
