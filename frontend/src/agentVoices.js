@@ -79,9 +79,27 @@ function processQueue() {
 
 // ── Public API ─────────────────────────────────────────────────────────────────
 
+// How each agent name should be pronounced by TTS
+const PRONUNCIATIONS = {
+  KORAL:    'Koral',
+  MAREA:    'Marea',
+  TASYA:    'Tasya',
+  NEREUS:   'Neereus',
+  ECHO:     'Echo',
+  SIMAR:    'Simar',
+  NAVIS:    'Navis',
+  RISKADOR: 'Riskador',
+  TRITON:   'Triton',
+  AEGIS:    'Aegis',
+  TEMPEST:  'Tempest',
+  LEVIER:   'Levier',
+  BARRIER:  'Barrier',
+}
+
 export function speakAgent(agent, message) {
   if (!window.speechSynthesis || _muted) return
-  const text = `${agent}: ${message}`
+  const name = PRONUNCIATIONS[agent] || agent.charAt(0) + agent.slice(1).toLowerCase()
+  const text = `${name}: ${message}`
   _queue.push({ agent, text })
   processQueue()
 }
