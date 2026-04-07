@@ -1,7 +1,7 @@
 """
 TARE - Single-command launcher
 Run: python run.py
-Starts server, opens browser, then launches narrated demo automatically.
+Starts server and opens browser. Use the Narration button in the UI to start narration.
 """
 import subprocess
 import sys
@@ -32,19 +32,14 @@ print()
 print(f"  Starting server on port {port}...")
 print(f"  Browser will open at:  http://localhost:{port}")
 print()
-print("  Narrated demo will start automatically in 5 seconds.")
 print("  Press Ctrl+C to stop.")
 print()
 
-def open_browser_and_narrate():
+def open_browser():
     time.sleep(3)
     webbrowser.open(f"http://localhost:{port}")
-    time.sleep(4)  # give browser time to load
-    narrate_script = os.path.join(ROOT, "narrate.py")
-    if os.path.exists(narrate_script):
-        subprocess.Popen([sys.executable, narrate_script])
 
-threading.Thread(target=open_browser_and_narrate, daemon=True).start()
+threading.Thread(target=open_browser, daemon=True).start()
 
 os.chdir(os.path.join(ROOT, "backend"))
 subprocess.run([
