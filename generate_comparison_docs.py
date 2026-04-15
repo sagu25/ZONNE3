@@ -29,6 +29,17 @@ TITLE = "Tool Comparison"
 SUBTITLE = "ServiceNow Now Assist vs Custom-Built AI Assistant"
 DATE = "April 2026 | LTIMindtree Internal"
 
+SOURCES = [
+    ("ServiceNow Now Assist — Official Product Page", "https://www.servicenow.com/platform/now-assist.html"),
+    ("Gartner Peer Insights — ServiceNow Now Assist Reviews & Ratings 2026", "https://www.gartner.com/reviews/product/servicenow-now-assist"),
+    ("Plat4mation — What is ServiceNow Now Assist and why does it matter?", "https://plat4mation.com/blog/what-is-servicenow-now-assist-and-why-does-it-matter/"),
+    ("eesel AI — 6 Best AI tools for ServiceNow in 2026: Complete comparison", "https://www.eesel.ai/blog/best-ai-for-servicenow"),
+    ("Crossfuze — Now Assist FAQs", "https://www.crossfuze.com/post/now-assist-faqs"),
+    ("Redress Compliance — ServiceNow Now Assist Pricing and the ROI Reality", "https://redresscompliance.com/servicenow-now-assist-ai-strategy-white-paper.html"),
+    ("servistio — AI in ServiceNow: Now Assist GenAI vs AI Agents", "https://servistio.com/en/blog/ai-in-servicenow-what-is-the-difference-between-now-assist-genai-and-ai-agents/"),
+    ("ServiceNow Community — Now Assist FAQs", "https://www.servicenow.com/community/now-assist-articles/now-assist-faqs/ta-p/2685122"),
+]
+
 overview_headers = ["", "Now Assist", "Custom-Built AI Assistant"]
 overview_rows = [
     ["What it is", "GenAI layer built natively into ServiceNow platform", "AI assistant built on BlueVerse Foundry, LangChain, or direct LLM APIs"],
@@ -273,6 +284,24 @@ def build_word():
     run2 = p.add_run(bottom_line)
     run2.font.size = Pt(10)
 
+    # Sources
+    doc.add_paragraph()
+    p = doc.add_paragraph()
+    run = p.add_run("Sources & References")
+    run.bold = True
+    run.font.size = Pt(12)
+    run.font.color.rgb = RGBColor(0x1B, 0x3A, 0x6B)
+    p.paragraph_format.space_before = Pt(12)
+    p.paragraph_format.space_after = Pt(4)
+
+    for i, (label, url) in enumerate(SOURCES, start=1):
+        p = doc.add_paragraph(style='List Number')
+        run_label = p.add_run(f"{label} — ")
+        run_label.font.size = Pt(9)
+        run_url = p.add_run(url)
+        run_url.font.size = Pt(9)
+        run_url.font.color.rgb = RGBColor(0x2E, 0x86, 0xC1)
+
     doc.save("NOW_ASSIST_VS_CUSTOM_BUILT_COMPARISON.docx")
     print("Word document saved.")
 
@@ -417,6 +446,21 @@ def build_pdf():
         f"<b>Bottom Line:</b> {bottom_line}",
         style_bottom
     ))
+
+    # Sources
+    story.append(Spacer(1, 14))
+    story.append(HRFlowable(width="100%", thickness=1, color=DARK_BLUE))
+    story.append(Spacer(1, 6))
+    story.append(Paragraph("Sources & References", style_section))
+
+    style_source = ParagraphStyle('Source', fontSize=8, textColor=colors.black,
+                                   spaceAfter=3, leading=12, leftIndent=10)
+    style_source_url = ParagraphStyle('SourceURL', fontSize=7.5, textColor=MID_BLUE,
+                                       spaceAfter=5, leading=11, leftIndent=20)
+
+    for i, (label, url) in enumerate(SOURCES, start=1):
+        story.append(Paragraph(f"{i}. <b>{label}</b>", style_source))
+        story.append(Paragraph(url, style_source_url))
 
     doc.build(story)
     print("PDF saved.")
